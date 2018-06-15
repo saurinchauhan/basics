@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class EmployeeDao {
@@ -21,10 +25,30 @@ public class EmployeeDao {
 		e.setSalary(rs.getFloat(3));
 		return e;
 	};
+	
+	void saveAndUpdate(Employee e) throws SQLException {
+		save(e);
+		
+		e.setName("dfsdfsdf");
+		e.setSalary(123F);
+		update(e);
+	}
 
 	public int save(Employee employee) throws SQLException {
 		String query = "INSERT INTO employee (id, name, salary) VALUES (?,?,?)";
-		return jdbcTemplate.update(query, employee.getId(), employee.getName(), employee.getSalary());
+		int i = jdbcTemplate.update(query, employee.getId(), employee.getName(), employee.getSalary());
+//		if (System.currentTimeMillis() % 2 == 0)
+//			throw new RuntimeException("Runtime exception");
+		return i;
+	}
+	
+	public int update(Employee employee) throws SQLException {
+		String query = "UPDATE employee SET name=?,salary=? where id=?";
+		int i = jdbcTemplate.update(query, employee.getName()
+				, employee.getSalary(),employee.getName());
+//		if (System.currentTimeMillis() % 2 == 0)
+//			throw new RuntimeException("Runtime exception");
+		return i;
 	}
 
 	public List<Employee> getEmployeeById(int id) {

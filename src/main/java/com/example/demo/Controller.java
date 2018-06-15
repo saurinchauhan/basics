@@ -20,4 +20,7 @@ public class Controller {
 		return myService.getEmployeeById(id);
 	}
 	
+	void saveAndUpdate(Employee e) throws SQLException{
+		myService.saveAndUpdate(e);
+	}
 }
